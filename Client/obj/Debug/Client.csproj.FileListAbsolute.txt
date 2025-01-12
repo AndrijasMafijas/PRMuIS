@@ -1,0 +1,7 @@
+D:\PRMUIS\prmuis\Client\bin\Debug\Client.exe.config
+D:\PRMUIS\prmuis\Client\bin\Debug\Client.exe
+D:\PRMUIS\prmuis\Client\bin\Debug\Client.pdb
+D:\PRMUIS\prmuis\Client\obj\Debug\Client.csproj.AssemblyReference.cache
+D:\PRMUIS\prmuis\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
+D:\PRMUIS\prmuis\Client\obj\Debug\Client.exe
+D:\PRMUIS\prmuis\Client\obj\Debug\Client.pdb

@@ -1,0 +1,14 @@
+D:\PRMUIS\Projekat\Server\bin\Debug\Server.exe.config
+D:\PRMUIS\Projekat\Server\bin\Debug\Server.exe
+D:\PRMUIS\Projekat\Server\bin\Debug\Server.pdb
+D:\PRMUIS\Projekat\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+D:\PRMUIS\Projekat\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+D:\PRMUIS\Projekat\Server\obj\Debug\Server.exe
+D:\PRMUIS\Projekat\Server\obj\Debug\Server.pdb
+D:\PRMUIS\prmuis\Server\bin\Debug\Server.exe.config
+D:\PRMUIS\prmuis\Server\bin\Debug\Server.exe
+D:\PRMUIS\prmuis\Server\bin\Debug\Server.pdb
+D:\PRMUIS\prmuis\Server\obj\Debug\Server.csproj.AssemblyReference.cache
+D:\PRMUIS\prmuis\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
+D:\PRMUIS\prmuis\Server\obj\Debug\Server.exe
+D:\PRMUIS\prmuis\Server\obj\Debug\Server.pdb
