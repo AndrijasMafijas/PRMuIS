@@ -12,3 +12,6 @@ D:\PRMUIS\prmuis\Server\obj\Debug\Server.csproj.AssemblyReference.cache
 D:\PRMUIS\prmuis\Server\obj\Debug\Server.csproj.CoreCompileInputs.cache
 D:\PRMUIS\prmuis\Server\obj\Debug\Server.exe
 D:\PRMUIS\prmuis\Server\obj\Debug\Server.pdb
+D:\PRMUIS\prmuis\Server\bin\Debug\Klasee.dll
+D:\PRMUIS\prmuis\Server\bin\Debug\Klasee.pdb
+D:\PRMUIS\prmuis\Server\obj\Debug\Server.csproj.Up2Date

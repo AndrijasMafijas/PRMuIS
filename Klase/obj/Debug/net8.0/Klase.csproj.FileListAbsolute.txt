@@ -1,0 +1,12 @@
+D:\PRMUIS\prmuis\Klase\bin\Debug\net8.0\Klase.deps.json
+D:\PRMUIS\prmuis\Klase\bin\Debug\net8.0\Klase.dll
+D:\PRMUIS\prmuis\Klase\bin\Debug\net8.0\Klase.pdb
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\Klase.GeneratedMSBuildEditorConfig.editorconfig
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\Klase.AssemblyInfoInputs.cache
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\Klase.AssemblyInfo.cs
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\Klase.csproj.CoreCompileInputs.cache
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\Klase.sourcelink.json
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\Klase.dll
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\refint\Klase.dll
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\Klase.pdb
+D:\PRMUIS\prmuis\Klase\obj\Debug\net8.0\ref\Klase.dll

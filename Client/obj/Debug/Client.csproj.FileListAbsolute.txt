@@ -5,3 +5,6 @@ D:\PRMUIS\prmuis\Client\obj\Debug\Client.csproj.AssemblyReference.cache
 D:\PRMUIS\prmuis\Client\obj\Debug\Client.csproj.CoreCompileInputs.cache
 D:\PRMUIS\prmuis\Client\obj\Debug\Client.exe
 D:\PRMUIS\prmuis\Client\obj\Debug\Client.pdb
+D:\PRMUIS\prmuis\Client\bin\Debug\Klasee.dll
+D:\PRMUIS\prmuis\Client\bin\Debug\Klasee.pdb
+D:\PRMUIS\prmuis\Client\obj\Debug\Client.csproj.Up2Date

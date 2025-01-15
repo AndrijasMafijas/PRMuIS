@@ -12,6 +12,7 @@ namespace Server
     {
         static void Main(string[] args)
         {
+            string port = "";
             byte[] buffer = new byte[1024];
             int a = 0,b = 0;
             // Kreiranje utičnice za prijem datagrama
@@ -19,11 +20,11 @@ namespace Server
             ProtocolType.Udp);
 
 
-            // Povezivanje utičnice sa bilo kojom adresom na lokalnom računaru i portom 50000
+            // Povezivanje utičnice sa bilo kojom adresom na lokalnom računaru i portom 27015
             IPEndPoint recvEndPoint = new IPEndPoint(IPAddress.Any, 27015);
             recvSocket.Bind(recvEndPoint);
 
-
+            Console.WriteLine("Ocekujem poruku na "+recvEndPoint);
             // Bafer za prijem podataka
             byte[] recvBuf = new byte[1024];
             EndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
@@ -36,8 +37,11 @@ namespace Server
                 // Konverzija primljenih bajtova u string
                 string receivedMessage = Encoding.UTF8.GetString(recvBuf, 0, bytesReceived);
                 //Console.WriteLine(receivedMessage);
-                a = Convert.ToInt32(receivedMessage[0]);
-                b = Convert.ToInt32(receivedMessage[2]);
+                a = Convert.ToInt32(receivedMessage[0]) - 48;
+                b = Convert.ToInt32(receivedMessage[2]) - 48;
+                string []delovi = receivedMessage.Split(' ');
+                port = delovi[2];
+                //Console.WriteLine(a + " " + b);
                 if (a == 1)
                 {
                     Console.WriteLine("Client je odlucio da se koristi TCP");
@@ -69,7 +73,7 @@ namespace Server
             {
                 Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                IPEndPoint serverEP = new IPEndPoint(IPAddress.Any, 50001);
+                IPEndPoint serverEP = new IPEndPoint(IPAddress.Any, Convert.ToInt32(port));
 
                 serverSocket.Bind(serverEP);
 
@@ -133,7 +137,7 @@ namespace Server
 
 
                 // Podešavanje adrese primaoca
-                recvEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.7"), 50000);
+                recvEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.7"), Convert.ToInt32(port));
                 senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
                 sendSocket.Bind(recvEndPoint);

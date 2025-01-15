@@ -18,21 +18,26 @@ namespace Client
             bool dobar = false;
             while (!dobar)
             {
+                Console.WriteLine("Unesite ip adresu na koju zelite da posaljete poruku:");
+                string ipaddresa = Console.ReadLine();
+                Console.WriteLine("Unesite port na koji zelite da posaljete poruku:");
+                string port = Console.ReadLine();
                 Console.WriteLine("Odaberite koji cete protokol koristiti:");
                 Console.WriteLine("Ukoliko zelite TCP unesite 1 , a ukoliko zelite UDP unesite 2:");
                 int a = Convert.ToInt32(Console.ReadLine());
                 Console.WriteLine("Odaberite koje cete sifrfovanje koristiti:");
                 Console.WriteLine("Ukoliko zelite 3DES unesite 1 , a ukoliko zelite RSA unesite 2:");
                 int b = Convert.ToInt32(Console.ReadLine());
+                //ako je dobro uneto salje se serveru
                 if ((a == 1 || a == 2) && (b == 1 || b == 2))
                 {
                     // Kreiranje utičnice za slanje podataka
                     Socket odabirSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
                     ProtocolType.Udp);
                     // Podešavanje adrese primaoca
-                    IPEndPoint odabirEP = new IPEndPoint(IPAddress.Parse("192.168.1.7"), 27015);
+                    IPEndPoint odabirEP = new IPEndPoint(IPAddress.Parse(ipaddresa), 27015);
                     // Poruka za slanje
-                    string odabir = a.ToString() + " " + b.ToString();
+                    string odabir = a.ToString() + " " + b.ToString() + " " + port;
                     byte[] brojBajtova = Encoding.UTF8.GetBytes(odabir);
 
                     // Slanje odabira
@@ -57,13 +62,13 @@ namespace Client
                     Console.WriteLine("Izabrali ste tcp.");
                     Socket clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
-                    IPEndPoint serverEP = new IPEndPoint(IPAddress.Parse("192.168.1.7"), 50001);
+                    IPEndPoint serverEP = new IPEndPoint(IPAddress.Parse(ipaddresa), Convert.ToInt32(port));
                     
 
                     Console.WriteLine("Klijent je spreman za povezivanje sa serverom, kliknite enter");
                     Console.ReadKey();
                     clientSocket.Connect(serverEP);
-                    Console.WriteLine("Klijent je uspesno povezan sa serverom! Protokol je TCP, a port 50001.");
+                    Console.WriteLine("Klijent je uspesno povezan sa serverom! Protokol je TCP, a port " + port + ".");
                     #endregion
 
                     #region KomunikacijaTCP
@@ -120,7 +125,7 @@ namespace Client
 
 
                     // Podešavanje adrese primaoca
-                    IPEndPoint recvEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.7"), 50000);
+                    IPEndPoint recvEndPoint = new IPEndPoint(IPAddress.Parse(ipaddresa), Convert.ToInt32(port));
                     EndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
 
                     while (true)

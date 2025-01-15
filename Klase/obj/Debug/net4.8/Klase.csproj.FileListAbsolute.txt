@@ -1,0 +1,6 @@
+D:\PRMUIS\prmuis\Klase\obj\Debug\net4.8\Klase.csproj.AssemblyReference.cache
+D:\PRMUIS\prmuis\Klase\obj\Debug\net4.8\Klase.GeneratedMSBuildEditorConfig.editorconfig
+D:\PRMUIS\prmuis\Klase\obj\Debug\net4.8\Klase.AssemblyInfoInputs.cache
+D:\PRMUIS\prmuis\Klase\obj\Debug\net4.8\Klase.AssemblyInfo.cs
+D:\PRMUIS\prmuis\Klase\obj\Debug\net4.8\Klase.csproj.CoreCompileInputs.cache
+D:\PRMUIS\prmuis\Klase\obj\Debug\net4.8\Klase.sourcelink.json
