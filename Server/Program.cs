@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using Klase; // Pretpostavljam da je klasa u ovom namespace-u
 
 namespace Server
 {
@@ -13,35 +11,30 @@ namespace Server
         static void Main(string[] args)
         {
             string port = "";
+            string sifrovanje = "";
+            //byte[] key = null;
             byte[] buffer = new byte[1024];
-            int a = 0,b = 0;
-            // Kreiranje utičnice za prijem datagrama
-            Socket recvSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
-            ProtocolType.Udp);
+            int a = 0, b = 0;
+            byte[] key = Encoding.UTF8.GetBytes("123456789012345678901234"); // 24-byte key for 3DES
 
-
-            // Povezivanje utičnice sa bilo kojom adresom na lokalnom računaru i portom 27015
+            // Kreiranje utičnice za prijem datagrama preko postojeće klase
             IPEndPoint recvEndPoint = new IPEndPoint(IPAddress.Any, 27015);
-            recvSocket.Bind(recvEndPoint);
+            NacinKomunikacije serverCommunication = new NacinKomunikacije(0, "", "", recvEndPoint);
 
-            Console.WriteLine("Ocekujem poruku na "+recvEndPoint);
-            // Bafer za prijem podataka
-            byte[] recvBuf = new byte[1024];
-            EndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
+            Console.WriteLine("Ocekujem poruku na " + recvEndPoint);
             try
             {
                 // Prijem datagrama
-                int bytesReceived = recvSocket.ReceiveFrom(recvBuf, ref senderEndPoint);
+                EndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                int bytesReceived = serverCommunication.Receive(buffer, ref senderEndPoint);
 
-                // Konverzija primljenih bajtova u string
-                string receivedMessage = Encoding.UTF8.GetString(recvBuf, 0, bytesReceived);
-                //Console.WriteLine(receivedMessage);
+                string receivedMessage = Encoding.UTF8.GetString(buffer, 0, bytesReceived);
                 a = Convert.ToInt32(receivedMessage[0]) - 48;
                 b = Convert.ToInt32(receivedMessage[2]) - 48;
-                string []delovi = receivedMessage.Split(' ');
+
+                string[] delovi = receivedMessage.Split(' ');
                 port = delovi[2];
-                //Console.WriteLine(a + " " + b);
+                key = Encoding.UTF8.GetBytes(delovi[3]);
                 if (a == 1)
                 {
                     Console.WriteLine("Client je odlucio da se koristi TCP");
@@ -53,64 +46,71 @@ namespace Server
                 if (b == 1)
                 {
                     Console.WriteLine("Client je odlucio da se koristi 3DES");
+                    sifrovanje = "3DES";
                 }
                 else
                 {
                     Console.WriteLine("Client je odlucio da se koristi RSA");
+                    sifrovanje = "RSA";
                 }
-                Console.WriteLine("Received {0} bytes from {1}: {2}", bytesReceived,
-               senderEndPoint, receivedMessage);
+                Console.WriteLine("Received {0} bytes from {1}: {2}", bytesReceived, senderEndPoint, receivedMessage);
             }
             catch (SocketException ex)
             {
                 Console.WriteLine("recvfrom failed with error: {0}", ex.Message);
             }
-            // Zatvaranje utičnice nakon prijema
-            recvSocket.Close();
 
-
-            if (a == 1)
+            if (a == 1) // TCP komunikacija
             {
-                Socket serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                NacinKomunikacije tcpClient = new NacinKomunikacije(1, sifrovanje, Encoding.UTF8.GetString(key), new IPEndPoint(IPAddress.Any, Convert.ToInt32(port)));
 
-                IPEndPoint serverEP = new IPEndPoint(IPAddress.Any, Convert.ToInt32(port));
+                tcpClient.Listen();
+                Console.WriteLine("Server je stavljen u stanje osluskivanja");
 
-                serverSocket.Bind(serverEP);
+                // Prihvatanje nove konekcije
+                Socket acceptedSocket = tcpClient.Accept();
+                Console.WriteLine($"Povezao se novi klijent! Njegova adresa je {acceptedSocket.RemoteEndPoint}");
 
-                serverSocket.Listen(5);
-
-
-                Console.WriteLine($"Server je stavljen u stanje osluskivanja i ocekuje komunikaciju na {serverEP}");
-
-                Socket acceptedSocket = serverSocket.Accept();
-
-                IPEndPoint clientEP = acceptedSocket.RemoteEndPoint as IPEndPoint;
-                Console.WriteLine($"Povezao se novi klijent! Njegova adresa je {clientEP}");
-
-
-
+                // Komunikacija sa klijentom preko prihvaćenog socket-a
                 while (true)
                 {
                     try
                     {
-                        int brBajta = acceptedSocket.Receive(buffer);
-                        if (brBajta == 0)
+                        // Koristi acceptedSocket za prijem podataka
+                        int bytesReceived = acceptedSocket.Receive(buffer);
+                        if (bytesReceived == 0)
                         {
                             Console.WriteLine("Klijent je zavrsio sa radom");
                             break;
                         }
-                        string poruka = Encoding.UTF8.GetString(buffer,0,brBajta);
-                        Console.WriteLine(poruka);
 
+                        string poruka = "";
+
+                        byte[] encryptedMessage = new byte[bytesReceived];
+                        Array.Copy(buffer, encryptedMessage, bytesReceived);
+                        // Ako je šifrovanje 3DES, dešifrujemo poruku
+                        if (sifrovanje == "3DES")
+                        {
+                            poruka = TripleDES.Decrypt(encryptedMessage, Encoding.UTF8.GetBytes(tcpClient.Kljuc)); // Dešifrujemo poruku sa 3DES
+                        }
+
+                        Console.WriteLine("Klijent: " + poruka);
 
                         if (poruka == "kraj")
                             break;
 
-
                         Console.WriteLine("Unesite poruku");
                         string odgovor = Console.ReadLine();
 
-                        brBajta = acceptedSocket.Send(Encoding.UTF8.GetBytes(odgovor));
+                        // Ako je šifrovanje 3DES, šifrujemo poruku
+                        byte[] encryptedResponse = buffer;
+                        if (sifrovanje == "3DES")
+                        {
+                            encryptedResponse = TripleDES.Encrypt(odgovor, Encoding.UTF8.GetBytes(tcpClient.Kljuc)); // Šifrujemo odgovor sa 3DES
+                        }
+
+                        // Koristi acceptedSocket za slanje podataka
+                        acceptedSocket.Send(encryptedResponse);
                         if (odgovor == "kraj")
                             break;
                     }
@@ -119,79 +119,68 @@ namespace Server
                         Console.WriteLine($"Doslo je do greske {ex}");
                         break;
                     }
-
                 }
 
                 Console.WriteLine("Server zavrsava sa radom");
-                Console.ReadKey();
-                acceptedSocket.Close();
-                serverSocket.Close();
-
+                acceptedSocket.Close(); // Zatvori prihvaćeni socket nakon završetka
             }
-            else
+            else if (a == 2) // UDP komunikacija
             {
-                // Kreiranje utičnice za slanje podataka
-                
-                Socket sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram,
-                ProtocolType.Udp);
-
-
-                // Podešavanje adrese primaoca
-                recvEndPoint = new IPEndPoint(IPAddress.Parse("192.168.1.7"), Convert.ToInt32(port));
-                senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
-                sendSocket.Bind(recvEndPoint);
-
-                Console.WriteLine("SenderEP: {0} recvEP: {1}", senderEndPoint, recvEndPoint);
+                NacinKomunikacije udpClient = new NacinKomunikacije(0, sifrovanje, Encoding.UTF8.GetString(key), new IPEndPoint(IPAddress.Parse("192.168.1.7"), Convert.ToInt32(port)));
 
                 while (true)
                 {
-                    
                     try
                     {
-                        int bytes = sendSocket.ReceiveFrom(buffer, ref senderEndPoint);
+                        EndPoint senderEndPoint = new IPEndPoint(IPAddress.Any, 0);
+                        int bytesReceived = udpClient.Receive(buffer, ref senderEndPoint);
 
-                        if (bytes == 0)
+                        if (bytesReceived == 0)
                         {
                             Console.WriteLine("Klijent je zavrsio sa radom");
                             break;
                         }
 
-                        Console.WriteLine("Klijent:");
-                        string odgovor = Encoding.UTF8.GetString(buffer,0,bytes);
-                        Console.WriteLine(odgovor);
+                        // Dešifrovanje poruke ako je potrebno
+                        string odgovor = "";
+                        //Console.WriteLine(Convert.ToBase64String(buffer));
+                        //Console.ReadKey();
+
+                        byte[] encryptedMessage = new byte[bytesReceived];
+                        Array.Copy(buffer, encryptedMessage, bytesReceived);
+
+                        if (sifrovanje == "3DES")
+                        {
+                            odgovor = TripleDES.Decrypt(encryptedMessage,Encoding.UTF8.GetBytes(udpClient.Kljuc)); // Dešifrujemo poruku sa 3DES
+                        }
+
+                        Console.WriteLine("Klijent: " + odgovor);
+
                         if (odgovor == "kraj")
                             break;
 
-                        // Poruka za slanje
                         Console.WriteLine("Unesite poruku za klijenta:");
                         string message = Console.ReadLine();
-                        byte[] messageBytes = Encoding.UTF8.GetBytes(message);
 
+                        // Šifrovanje poruke ako je potrebno
+                        encryptedMessage = Encoding.UTF8.GetBytes(message);
+                        if (sifrovanje == "3DES")
+                        {
+                            encryptedMessage = TripleDES.Encrypt(message, Encoding.UTF8.GetBytes(udpClient.Kljuc)); // Šifrujemo poruku sa 3DES
+                        }
 
-                        // Slanje datagrama
-
-                        bytes = sendSocket.SendTo(messageBytes, 0, messageBytes.Length,
-                        SocketFlags.None, senderEndPoint);
+                        udpClient.SendTo(encryptedMessage, senderEndPoint);
 
                         if (message == "kraj")
                             break;
-                        Console.WriteLine("Poslato {0} bajtova na {1}", bytes, senderEndPoint);
-
-
-                        
                     }
                     catch (SocketException ex)
                     {
-                        Console.WriteLine($"Doslo je do greske tokom slanja:\n{ex}");
+                        Console.WriteLine($"Doslo je do greske tokom slanja: {ex}");
                         break;
                     }
-                    
                 }
-                // Zatvaranje utičnice nakon slanja
                 Console.WriteLine("Server zavrsava sa radom");
-                sendSocket.Close();
-                Console.ReadKey();
             }
         }
     }
